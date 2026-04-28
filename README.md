@@ -2,20 +2,20 @@
 
 ## Executive Summary
 
-This repository presents a data science-driven solution to the "trust gap" in global carbon offset markets. By deconstructing fragmented voluntary carbon market data into a 3rd Normal Form (3NF) Star Schema, we have synthesized a high-integrity analytical dataset ($D_1$) covering 11,245 projects across 92 countries. Our Random Forest machine learning architecture achieves an 81% accuracy rate in predicting the "Retirement Ratio"—the primary KPI for institutional market trust. This project provides a scalable, automated framework for identifying high-integrity carbon credits, enabling investors to mitigate "greenwashing" risk through rigorous feature importance analysis and historical developer benchmarking.
+This repository presents a data-driven framework for modeling the physical constraints and scaling laws of global energy infrastructure. By migrating 29,910 power generation records into a document-oriented MongoDB Atlas cluster, we have synthesized a high-performance analytical pipeline covering 164 countries. Our Random Forest machine learning architecture analyzes the non-linear relationship between geospatial coordinates and Nameplate Capacity (MW), revealing that location is a dominant predictor of industrial scale. This project provides a scalable, automated solution for forecasting energy infrastructure footprints, enabling strategic stakeholders to conduct initial market sizing and infrastructure assessments through rigorous feature importance analysis and geospatial benchmarking.
 
 **Author:** [Oliver Andress]  
 
 **NetID:** [csg7su]  
 
-**DOI:** [[DOI]
+**DOI:** [DOI]
 
 
 **License:** [MIT License]
 
 ### Quick Links
 - **Press Release:** [Press Release]
-- **Data:** [OneDrive Data Folder](
+- **Data:** [Data Folder](./data)
 - **Pipeline:** [Analysis Pipeline](./code/pipeline.ipynb)
 
 
@@ -99,87 +99,83 @@ The background_reading folder contains five high-impact articles and strategic r
 ## Data Creation
 
 ### Data Provenance
+This dataset originates from the **World Resources Institute (WRI)**, specifically the **Global Power Plant Database (v1.3.0)**. The WRI is a global research non-profit that established this database as a comprehensive, open-source inventory of the world’s power generation assets. The raw data was acquired as a standardized CSV on **March 15, 2026**, containing approximately 29,910 records across 164 countries. 
 
-<Insert later> 
+The dataset aggregates information from national sub-registries, government ministries, and utility reports. Key attributes include plant name, nameplate capacity (MW), primary fuel type, and high-precision geospatial coordinates. For this project, the data was migrated from its flat-file origin into a **MongoDB Atlas** cluster. This transition involved a custom ETL process to "documentize" the data, converting flat columns into nested BSON objects (e.g., `location` and `specs`) to better reflect the hierarchical nature of industrial infrastructure.
 
 ### Code Documentation
 
-
-<Insert Markdown> 
-
+| File | Description | Location |
+| :--- | :--- | :--- |
+| **ingestion_pipeline.py** | Orchestrates the migration from raw CSV to MongoDB Atlas. Includes the transformation logic for nested document nesting, connection string handling via `.env`, and comprehensive error logging to `ingestion.log`. | [ingestion_pipeline.ipynb](code/ingestion_pipeline.ipynb) |
+| **analysis_pipeline.ipynb** | The primary Jupyter Notebook containing the database query, data flattening, Random Forest modeling, and publication-quality visualization generation. | [analysis_pipeline.ipynb](code/analysis_pipeline.ipynb) |
 
 ### Bias Identification
-
-Several sources of systematic bias exist in this  data that must be acknowledged:
-
-<Insert Later> 
+Systematic biases within global energy reporting must be acknowledged to interpret the model's predictions accurately:
+* **Reporting Bias:** Data quality varies significantly by national transparency standards. Countries with mature regulatory frameworks (Global North) provide granular, verified data, while data from developing regions may rely on older, non-verified estimates.
+* **Size (Utility) Bias:** There is a clear bias toward utility-scale facilities. Smaller, decentralized power sources (e.g., private residential solar or micro-hydro) are frequently omitted from national registries, potentially skewing the model toward larger "Nameplate" averages.
+* **Technological Lag:** Given the rapid expansion of renewables, the database may under-represent the most recent "distributed" energy projects (Wind/Solar) while maintaining a complete record of older, centralized fossil fuel assets.
+* **Geospatial Precision Bias:** While coordinates are provided, "fuzzy" location data in certain sensitive regions can introduce noise into the model's ability to cluster plants by regional industrial hubs.
 
 ### Bias Mitigation
-
-To address these identified biases and ensure a robust risk model, we implement the following strategies:
-
-<Insert Later> 
+To account for these biases and ensure a robust predictive tool, the following strategies were implemented:
+* **Logarithmic Scaling:** We applied a log-transformation to the capacity target to mitigate the extreme "Size Bias" between 1 MW and 20,000 MW plants. This ensures the model is not dominated by a few outlier "Mega-Plants."
+* **One-Hot Feature Encoding:** By treating "Fuel Type" as a categorical feature, we allow the model to learn the specific scale-constraints of different technologies (e.g., knowing that "Nuclear" implies a large scale regardless of location).
+* **Stratified Evaluation:** The use of **RMSE** alongside **R-squared** allows us to quantify the magnitude of our errors across different scales, identifying where the "Reporting Bias" may be creating higher variance.
+* **Geospatial Feature Weighting:** The Random Forest model naturally identifies Feature Importance, allowing us to quantify how much "Longitude" (a proxy for regional development) overrides specific technological data, thus identifying geographic bias in the results.
 
 ### Rationale for Critical Decisions
-
-<insert Later> 
+* **NoSQL Document Architecture:** I chose to move from CSV to **MongoDB** to handle the "Implicit Schema" of power plants. Since different energy types often have different metadata (e.g., Dam height for Hydro vs. Panel type for Solar), a document store prevents the "Column Bloat" found in traditional SQL databases.
+* **Nested BSON Objects:** I made the decision to group `latitude` and `longitude` into a single `location` sub-object. This enforces data integrity, ensuring that coordinates are treated as a single geospatial point rather than two independent numbers.
+* **Pipeline-Based Preprocessing:** All transformations (One-Hot Encoding and Column Transformation) were handled within a **Scikit-Learn Pipeline**. This prevents **Data Leakage** by ensuring that the categorical mapping learned on the training set is the only information used to transform the test set.
+* **Inclusion of "Unknown" Fuels:** Rather than dropping records with missing fuel data, I retained them to maintain a realistic "Global" sample size. The model is forced to rely on geospatial coordinates for these records, testing the robustness of the location-based features.
+* **Uncertainty Sources:** Primary uncertainties include: (1) Temporal drift in plant decommissioning, (2) Subjectivity in "Primary Fuel" for multi-fuel plants, and (3) Inconsistencies in how "Nameplate Capacity" is measured across different national standards. These limitations are acknowledged as the primary drivers of the observed variance in the $R^2$ results.
   
 ## Metadata
 ---
 
-Insert later
+### Implicit Schema Guidelines
+
+To maximize the flexibility of the **MongoDB Atlas** document store, this project adheres to a "Document-First" design philosophy. Unlike a rigid SQL schema, the implicit schema for the `power_grid_db` was designed using the following guidelines:
+
+1.  **Logical Grouping (Nesting):** High-level attributes are grouped into sub-objects based on their domain. For instance, `latitude` and `longitude` are nested within a `location` object, while technical metrics like `capacity_mw` are nested within a `specs` object. This ensures that a single document represents a cohesive physical entity.
+2.  **Data Typing for Performance:** Numerical values that require mathematical operations (e.g., coordinates and capacity) are explicitly cast as `Double` or `Decimal128` during ingestion. This prevents the computational overhead of string-to-float conversion during the ML pipeline's query phase.
+3.  **Handling Sparse Metadata:** The schema supports "Polymorphism," allowing renewable plants to store additional metadata (e.g., `solar_type` or `wind_turbine_count`) that fossil-fuel plants omit, without requiring the creation of thousands of NULL values in a flat table.
+
+---
+
+### Data Summary
+
+| Attribute | Value |
+| :--- | :--- |
+| **Total Records** | 29,910 |
+| **Unique Countries** | 164 |
+| **Primary Target** | `capacity_mw` |
+| **Database Type** | NoSQL (Document-Oriented) |
+| **Storage Engine** | WiredTiger (MongoDB Atlas) |
+| **Collection Name** | `plants` |
+
 ---
 
 ### Data Dictionary
 
-Complete data dictionary documenting all features across the established Secondary Data Set ($D_1$) used for Machine Learning.
-
-#### Table 1: PROJECTS (Central Fact Table)
-
-| Column | Data Type | Description | Example |
+| Name | Data Type | Description | Example |
 | :--- | :--- | :--- | :--- |
-| **project_id** | string | Unique identifier for each carbon offset project (Primary Key). | "VCS123" |
-| **developer_id** | int64 | Reference to the entity responsible (Foreign Key → developers.developer_id). | 1042 |
-| **location_id** | int64 | Reference to the geographic site (Foreign Key → locations.location_id). | 505 |
-| **method_id** | int64 | Reference to the verification rules (Foreign Key → methodology.method_id). | 88 |
-| **project_name** | string | The official name of the project as listed in the registry. | "Southern Cardamom REDD+" |
-| **broad_category**| string | Engineered feature binning 60+ specific types into 8 industrial sectors. | "Nature-Based" |
+| `plant_name` | String | The official name of the power generation facility. | "Three Gorges Dam" |
+| `capacity_mw` | Float64 | The nameplate capacity of the plant in Megawatts. | 22500.0 |
+| `primary_fuel` | String | The main energy source used for generation. | "Hydro" |
+| `latitude` | Float64 | Precision coordinate of the plant's location. | 30.8239 |
+| `longitude` | Float64 | Precision coordinate of the plant's location. | 111.0031 |
+| `country_long` | String | The full name of the country where the plant is located. | "China" |
 
-#### Table 2: DEVELOPERS (Dimension)
-
-| Column | Data Type | Description | Example |
-| :--- | :--- | :--- | :--- |
-| **developer_id** | int64 | Unique numerical identifier for the developer (Primary Key). | 1042 |
-| **developer** | string | The specific entity or firm name. | "South Pole" |
-
-#### Table 3: LOCATIONS (Dimension)
-
-| Column | Data Type | Description | Example |
-| :--- | :--- | :--- | :--- |
-| **location_id** | int64 | Unique identifier for a country/region pair (Primary Key). | 505 |
-| **country** | string | The nation where the project site is physically located. | "Cambodia" |
-| **region** | string | The global geographic theater of operation. | "Latin America" |
-
-#### Table 4: METHODOLOGY (Dimension)
-
-| Column | Data Type | Description | Example |
-| :--- | :--- | :--- | :--- |
-| **method_id** | int64 | Unique identifier for a registry/protocol pair (Primary Key). | 88 |
-| **registry** | string | The official body responsible for issuing and verifying credits. | "Verra (VCS)" |
-| **protocol** | string | The specific methodology ruleset used during the audit. | "VM0009" |
-
-#### Table 5: PERFORMANCE (Fact Extension)
-
-| Column | Data Type | Description | Example |
-| :--- | :--- | :--- | :--- |
-| **project_id** | string | Project identifier (Primary Key, Foreign Key → projects.project_id). | "VCS123" |
-| **issued_num** | float64 | Total metric tonnes of $CO_2$ credits created. | 1540200.0 |
-| **retired_num** | float64 | Total metric tonnes of $CO_2$ credits permanently removed. | 850000.0 |
-| **retirement_ratio**| float64 | **Target Variable**: The ratio of retired credits to total issued credits. | 0.55 |
 ---
 
-### Quantitative Uncertainty of Numerical Features
+### Numerical Uncertainty Quantification
 
-* **Measurement Error ($\pm 3\%$):** `issued_num` and `retired_num` are subject to registry reporting lags (Vintage Lag). Data for the most recent 12 months is considered "preliminary" and may be updated as final audits close.
-* **Calculation Stability:** `retirement_ratio` uncertainty increases for projects with `issued_num` < 1,000, as small transactions create high ratio volatility.
-* **Type Transformation:** The conversion from raw strings (e.g., "1,200,500") to `float64` was validated against a random sample to ensure no data loss during the SQL `CAST` operation.
+In industrial infrastructure modeling, numerical features are rarely "perfect." The following table quantifies the sources of uncertainty for the predictive features:
+
+| Feature | Estimated Uncertainty | Primary Source of Noise |
+| :--- | :--- | :--- |
+| **capacity_mw** | ± 5-10% | **Reporting Standards:** Discrepancies between "Gross Capacity" (total output) and "Net Capacity" (output sent to grid) vary by country. Furthermore, historical decommissioning of individual units within a plant may not be reflected in real-time in the nameplate total. |
+| **latitude** | ± 0.001 - 0.1° | **Precision Variance:** Some coordinates are high-precision GPS points at the plant's generator hall, while others (especially in sensitive regions) are "fuzzy" centroids representing a general administrative area. |
+| **longitude** | ± 0.001 - 0.1° | **Geospatial Drift:** Similar to latitude, the precision depends on the source (e.g., satellite verification vs. self-reported government registries). |
