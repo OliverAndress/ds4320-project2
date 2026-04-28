@@ -1,4 +1,4 @@
-# DS 4320 Project 2: Predicting Carbon Offset Success Using Relational Risk Modeling
+# DS 4320 Project 2 Global Power Capacity Prediction via Document Oriented Geospatial
 
 ## Executive Summary
 
@@ -10,14 +10,12 @@ This repository presents a data-driven framework for modeling the physical const
 
 **DOI:** [DOI]
 
-**License:** [MIT License]
+**License:** [MIT License](LICENSE) 
 
 ### Quick Links
 - **Press Release:** [Press Release](PRESS_RELEASE.md)
 - **Data:** [Data Folder](./data)
 - **Pipeline:** [Analysis Pipeline](./code/pipeline.ipynb)
-
-
 
 ---
 
@@ -98,7 +96,7 @@ The background_reading folder contains five high-impact articles and strategic r
 ## Data Creation
 
 ### Data Provenance
-This dataset originates from the **World Resources Institute (WRI)**, specifically the **Global Power Plant Database (v1.3.0)**. The WRI is a global research non-profit that established this database as a comprehensive, open-source inventory of the world’s power generation assets. The raw data was acquired as a standardized CSV on **March 15, 2026**, containing approximately 29,910 records across 164 countries. 
+This dataset originates from the World Resources Institute (WRI), specifically the **Global Power Plant Database (v1.3.0)**. The WRI is a global research non-profit that established this database as a comprehensive, open-source inventory of the world’s power generation assets. The raw data was acquired as a standardized CSV on **March 15, 2026**, containing approximately 29,910 records across 164 countries. 
 
 The dataset aggregates information from national sub-registries, government ministries, and utility reports. Key attributes include plant name, nameplate capacity (MW), primary fuel type, and high-precision geospatial coordinates. For this project, the data was migrated from its flat-file origin into a **MongoDB Atlas** cluster. This transition involved a custom ETL process to "documentize" the data, converting flat columns into nested BSON objects (e.g., `location` and `specs`) to better reflect the hierarchical nature of industrial infrastructure.
 
