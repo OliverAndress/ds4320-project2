@@ -24,22 +24,17 @@ This repository presents a data science-driven solution to the "trust gap" in gl
 
 ## Problem Definition
 
-**General Problem:**
+**General Problem Statement:** 11. Forecasting energy demand
 
+**Refined Specific Problem Statement:** This project focuses on predicting the **Nameplate Capacity (MW)** of global power facilities by utilizing geographic coordinates (latitude and longitude) and primary fuel sources as high-dimensional features. By shifting from a macro-view of energy demand to a micro-level prediction of facility output, we can model the physical infrastructure required to meet that demand.
 
-**Refined Specific Problem:**
+---
 
-The primary challenge in carbon market analysis is the "Selection Bias" inherent in registry data, as the dataset only includes projects that successfully cleared the rigorous initial registration process. Consequently, this project defines success not as **Market Utilization**.
+### Project Motivation
+With more and more international attention on energy demands with rising AI energy costs and more consumption in general I was curious to see and look into something related to energy. When I was looking online for a data source to use I came across one in Kaggle that gave tens of thousands of different global power facilities. 
 
-The specific problem is to predict whether a registered reforestation initiative will be **Effective** (demonstrating high credit retirement rates and consistent issuance) or **Underperforming** (functioning as a "Ghost Project" with issued credits that fail to reach the market). By leveraging registry affiliation, geographic region, and project type, the model identifies the risk factors that lead a registered project to stall or fail in its operational phase.
-
-**Rationale:**
-
-<>
-
-**Motivation Paragraph**
-
-<>
+### Rationale for Refinement
+The refinement from the broad domain of "forecasting energy demand" to the specific prediction of "nameplate capacity" was driven by the need for technical rigor and model interpretability. While demand is influenced by thousands of volatile socio-economic variables, capacity is a function of fixed engineering constraints and geographic suitability. By narrowing the scope to these intrinsic features, the project utilizes supervised learning techniques—such as Random Forest regression and pipeline-based feature encoding—to provide a defensible, metric-driven analysis. This specific focus allows for a deeper evaluation of how much information "location" and "technology" actually carry, revealing the latent variables—like regional economic maturity—that drive the scale of global energy infrastructure.
 
 **Press Release**
 
@@ -49,28 +44,55 @@ The specific problem is to predict whether a registered reforestation initiative
 
 ---
 
-## Domain Context: The Voluntary Carbon Market (VCM)
+## Domain Exposition
 
 ### Terminology & KPIs
 
-<Insert Markdown Table>
+| Term | Definition | Why it matters in this project |
+| :--- | :--- | :--- |
+| **Nameplate Capacity** | The maximum intended full-load sustained output of a facility. | The primary target variable ($y$) for our predictive model. |
+| **Megawatt (MW)** | A unit of power equal to one million watts. | The standard unit of measurement for our capacity predictions. |
+| **Primary Fuel** | The main energy source used by a plant to generate electricity. | A key categorical feature used to differentiate power scales (e.g., Nuclear vs. Solar). |
+| **Baseload Power** | The minimum amount of electric power delivered to a grid at a steady rate. | Explains why certain fuels (Nuclear/Coal) dominate high-capacity predictions. |
+| **Capacity Factor** | The ratio of actual electrical energy produced to the maximum possible energy. | Distinguishes between theoretical output and actual performance in demand forecasting. |
+| **Grid Interconnectivity** | The physical linking of various energy networks. | A latent variable that influences whether a plant is built for local or national scale. |
+| **Geospatial Coordinates** | The latitude and longitude identifying a specific point on Earth. | The primary features used to identify regional industrial clusters. |
+| **NoSQL (Document Store)** | A non-tabular database that stores data in flexible, JSON-like documents. | The architecture used in MongoDB Atlas to handle our nested power plant data. |
+| **BSON** | A binary-encoded serialization of JSON-like documents. | The format MongoDB uses to store our "Implicit Schema" in the cloud. |
+| **Implicit Schema** | A data structure defined by the data itself rather than a rigid table. | Allows us to store nested objects like `location` and `specs` without pre-defined SQL columns. |
+| **Random Forest** | An ensemble learning method that uses multiple decision trees. | Our chosen model for capturing non-linear geospatial patterns in energy infrastructure. |
+| **R-squared ($R^2$)** | A statistical measure of how close the data are to the fitted regression line. | Used to evaluate how much of the variance in capacity is explained by our features. |
+| **RMSE** | Root Mean Square Error; measures the average magnitude of prediction error. | KPI used to determine how many Megawatts our model is "off" by on average. |
+| **One-Hot Encoding** | Converting categorical text into a binary numerical format. | Necessary for the model to process "Fuel Type" as a mathematical input. |
+| **Log-Log Scaling** | Applying a logarithmic transformation to both the $x$ and $y$ axes. | Critical for visualizing power plants that span four orders of magnitude in size. |
+| **Feature Importance** | A technique that assigns scores to input features based on their predictive power. | Used to prove that Longitude and Latitude are the dominant drivers of plant scale. |
+
+--- 
+
+### Domain Context: Global Energy Infrastructure
+
+This project exists within the domain of **Global Energy Infrastructure and Utility Management**. It addresses the physical supply side of the "Forecasting Energy Demand" problem by analyzing the distribution and scale of the world's power generation assets. In a globalized economy, energy capacity is not just a technical metric; it is a proxy for regional industrial maturity, economic development, and carbon intensity. 
+
+While energy demand is often studied through the lens of consumption, this analysis focuses on the structural reality of the power Grid. By utilizing a document-oriented database to store 29,910 facilities across 164 countries, the project seeks to understand the "Scaling Laws" of infrastructure. It investigates how geographic placement and technological choice (fuel type) dictate the size of a plant. In a professional strategic context, this modeling is vital for "Market Sizing" and identifying where the physical limitations of a regional grid may hinder future industrial growth or transition to renewable energy.
 
 
----
-
-<Insert which context and domains this is situated in>
 
 ---
 
 ### Background Reading Summary
 
 Background Reading
-All background reading materials are available in this folder: [Background Readings Folder] <insert link> 
+All background reading materials are available in this folder: [Background Readings Folder](https://myuva-my.sharepoint.com/:f:/g/personal/csg7su_virginia_edu/IgCCNLVdFR9XRbgJ_3TWUNmOAaQX6Hq8oM8zLB38e8zEydw?e=OkBdaw) 
 
-The background_reading folder contains five high-impact...
+The background_reading folder contains five high-impact articles and strategic reports that provide the domain-specific context for this energy infrastructure pipeline. These sources cover the technical definitions of capacity, the global shift toward renewables, and the emerging demand drivers like AI and data centers.
 
-
-<Insert Markdown table> 
+| Title | Brief Description | Link to OneDrive File |
+| :--- | :--- | :--- |
+| **The Biggest Power Plants: Nameplate vs. Generation** | Explores the critical distinction between Nameplate Capacity and actual generation, defining the "Capacity Factor" as the bridge between theoretical output and grid reality. It provides the technical justification for the variance in predictive models across different fuel types. | [View PDF](https://myuva-my.sharepoint.com/:b:/g/personal/csg7su_virginia_edu/IQDk839zB_QbTZvwmRfvrVHlAeLiEW2_kMBtYoHtW_hJSFc?e=NEOtmx) |
+| **100% Renewable Energy Roadmap for 139 Countries** | A strategic research summary detailing the technical and economic pathways for a global transition to zero-carbon energy by 2050. It analyzes the role of market forces in displacing fossil fuels and the infrastructure scaling required for 99% of global emissions coverage. | [View PDF](https://myuva-my.sharepoint.com/:b:/g/personal/csg7su_virginia_edu/IQCnCmtxH7oQS6od040FS9TjASnfz-QAa95XmSeD8L_0VZ8?e=gF1Kvu) |
+| **IEA: The Impact of AI on Global Energy Demand** | Analyzes the emergence of AI and data centers as primary drivers of new electricity consumption. This report highlights the geospatial clustering of demand in the U.S. and China, providing the "why" behind the significance of location features in modern infrastructure forecasting. | [View PDF](https://myuva-my.sharepoint.com/:b:/g/personal/csg7su_virginia_edu/IQCKGKAgoToJQLx9rvq9obFfAdLQRh5yurMO6DcUXCKZaWg?e=MhD1rT) |
+| **China’s Structural Shift: From Coal to Clean Foundations** | Provides a deep dive into the energy transition of the world’s largest electricity consumer. It documents the first absolute decline in coal generation and the exponential rise of renewables, offering essential context for regional variance in global energy datasets. | [View PDF](https://myuva-my.sharepoint.com/:b:/g/personal/csg7su_virginia_edu/IQAtHSyVEghZQ5WqdJFsuTUyAY4HltBxa_IaNg0oOD8eLVI?e=BNx8iW) |
+| **IEA: World Energy Supply and Transformation** | A macro-level overview of global energy balances, transformation efficiencies, and final consumption sectors. It establishes the baseline for the current fossil-fuel-dominated grid and the industrial sectors dictating the scale of required capacity. | [View PDF](https://myuva-my.sharepoint.com/:b:/g/personal/csg7su_virginia_edu/IQD23tmq83TWSrxtc5vvDwSEARWC18Q-CeK3MZuEyAHrqSA?e=vLSNZb) |
 
 ---
 
