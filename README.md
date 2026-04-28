@@ -8,7 +8,7 @@ This repository presents a data-driven framework for modeling the physical const
 
 **NetID:** [csg7su]  
 
-**DOI:** [DOI]
+**DOI:** [![DOI](https://zenodo.org/badge/1216332928.svg)](https://doi.org/10.5281/zenodo.19868569)
 
 **License:** [MIT License](LICENSE) 
 
