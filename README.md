@@ -104,8 +104,8 @@ The dataset aggregates information from national sub-registries, government mini
 
 | File | Description | Location |
 | :--- | :--- | :--- |
-| **ingest_data.ipynb** | Orchestrates the migration from raw CSV to MongoDB Atlas. Includes the transformation logic for nested document nesting, connection string handling via `.env`, and comprehensive error logging to `ingestion.log`. | [ingestion_pipeline.ipynb](code/ingest_data.ipynb) |
-| **pipeline.ipynb** | The primary Jupyter Notebook containing the database query, data flattening, Random Forest modeling, and publication-quality visualization generation. | [analysis_pipeline.ipynb](code/pipeline.ipynb) |
+| **ingest_data.ipynb** | Orchestrates the migration from raw CSV to MongoDB Atlas. Includes the transformation logic for nested document nesting, connection string handling via `.env`, and comprehensive error logging to `ingestion.log`. | [ingest_data.ipynb](code/ingest_data.ipynb) |
+| **pipeline.ipynb** | The primary Jupyter Notebook containing the database query, data flattening, Random Forest modeling, and publication-quality visualization generation. | [pipeline.ipynb](code/pipeline.ipynb) |
 
 ### Bias Identification
 Systematic biases within global energy reporting must be acknowledged to interpret the model's predictions accurately:
