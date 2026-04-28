@@ -10,11 +10,10 @@ This repository presents a data-driven framework for modeling the physical const
 
 **DOI:** [DOI]
 
-
 **License:** [MIT License]
 
 ### Quick Links
-- **Press Release:** [Press Release]
+- **Press Release:** [Press Release](PRESS_RELEASE.md)
 - **Data:** [Data Folder](./data)
 - **Pipeline:** [Analysis Pipeline](./code/pipeline.ipynb)
 
@@ -38,7 +37,7 @@ The refinement from the broad domain of "forecasting energy demand" to the speci
 
 **Press Release**
 
-**Headline:** UVA Data Scientists Launch ‘Carbon Integrity’ AI to Unmask the ‘Ghost Credits’ Threatening Climate Goals
+**Headline:** UVA Data Scientists Unveil AI Driven Global Grid Intelligence to Predict World Energy Infrastructure
 
 **Full Press Release:** [Press Release](PRESS_RELEASE.md)
 
